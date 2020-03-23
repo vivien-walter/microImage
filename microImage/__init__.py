@@ -24,7 +24,7 @@ def _check_extensions(list, extensions=['.tif','.png','.bmp','.gif','.jpg']):
 
     # Check that the new list is not empty
     if len(new_list) == 0:
-        return 0
+        raise Exception('The directory does not contain any valid file.')
     else:
         return new_list
 
@@ -37,8 +37,6 @@ def _open_folder(path):
 
     # Check that the files in the folder can be opened
     file_in_folder = _check_extensions(file_in_folder)
-    if file_in_folder == 0:
-        return 0
 
     # Open all the images
     sequence = pims.ImageSequence(path)
@@ -51,8 +49,6 @@ def _open_file(path):
 
     # Check the extension of the given file
     file_path = _check_extensions( [path] )
-    if file_path == 0:
-        return 0
     path = file_path[0]
 
     # Load the image(s)
@@ -95,7 +91,7 @@ def loadImage(path):
 
     # Abort if the file is not recognized
     else:
-        return 0
+        raise Exception('The input path is neither a file nor a directory.')
 
     # Return the appropriate object
     return imageArray
