@@ -1,97 +1,81 @@
-from glob import glob
-import numpy as np
 import os
-from PIL import Image, ImageSequence
-import pims
 
-##-\-\-\-\-\-\-\-\-\
-## PRIVATE FUNCTIONS
-##-/-/-/-/-/-/-/-/-/
+import microImage.correction as corr
+import microImage.image_classes as img
+import microImage.input_output as io
+import microImage.modification as mod
 
-# ----------------------------------------------------
-# Check that the extensions in the list are authorized
-def _check_extensions(list, extensions=['.tif','.png','.bmp','.gif','.jpg']):
-
-    new_list = []
-
-    # Process all the items of the list
-    for file in list:
-        file_name, file_extension = os.path.splitext(file)
-
-        # Save in the new list on if the extension is authorized
-        if file_extension in extensions:
-            new_list.append(file)
-
-    # Check that the new list is not empty
-    if len(new_list) == 0:
-        raise Exception('The directory does not contain any valid file.')
-    else:
-        return new_list
-
-# ------------------------------
-# Open all the files in a folder
-def _open_folder(path):
-
-    # Check all the files in the folder
-    file_in_folder = glob( os.path.join(path, '*.*') )
-
-    # Check that the files in the folder can be opened
-    file_in_folder = _check_extensions(file_in_folder)
-
-    # Open all the images
-    sequence = pims.ImageSequence(path)
-
-    return np.array(sequence)
-
-# ----------------------
-# Open the selected file
-def _open_file(path):
-
-    # Check the extension of the given file
-    file_path = _check_extensions( [path] )
-    path = file_path[0]
-
-    # Load the image(s)
-    sequence = Image.open(path)
-
-    # Deal with stacks (.tif) and animations (.gif)
-    if 'n_frames' in dir(sequence):
-
-        # Extract all frames
-        stack = []
-        for frame in ImageSequence.Iterator(sequence):
-            stack.append( np.copy(np.array(frame)) )
-
-        imageArray = np.array(stack)
-
-    # Convert simple image type
-    else:
-        imageArray = np.array(sequence)
-
-        # Format the shape of all image arrays
-        imageArray = np.reshape( imageArray, (1, *imageArray.shape) )
-
-    return imageArray
-
-##-\-\-\-\-\-\-\-\
-## PUBLIC FUNCTIONS
-##-/-/-/-/-/-/-/-/
+##-\-\-\-\-\-\-\-\-\-\-\
+## INPUT/OUTPUT FUNCTIONS
+##-/-/-/-/-/-/-/-/-/-/-/
 
 # ----------------------------------
-# Load an image, a stack or a folder
-def loadImage(path):
-
-    # Check if it is a folder
-    if os.path.isdir(path):
-        imageArray = _open_folder(path)
-
-    # Check if it is a file
-    elif os.path.isfile(path):
-        imageArray = _open_file(path)
-
-    # Abort if the file is not recognized
-    else:
-        raise Exception('The input path is neither a file nor a directory.')
-
-    # Return the appropriate object
+# Open the image and return an array
+def openImage(path):
+    imageArray = io.loadImage(path)
     return imageArray
+
+# ---------------------------------------
+# Open the image and load it into a class
+def loadImage(path, name = None):
+
+    # Open the image
+    imageArray = io.loadImage(path)
+
+    # Extract the name of the file
+    if name is None:
+        a,name = os.path.split(path)
+        if name == "":
+            a,name = os.path.split(a)
+
+    return img.getImageClass(imageArray, name=name)
+
+# -----------------------------
+# Save the image frame or stack
+def saveImage(array, path, default=".tif", bit_depth=8, rescale=True):
+    io.saveImage(array, path, default=default, bit_depth=bit_depth, rescale=rescale)
+
+##-\-\-\-\-\-\-\-\
+## IMAGE CORRECTION
+##-/-/-/-/-/-/-/-/
+
+# ---------------------------------------
+# Remove the background of an image stack
+def backgroundCorrection(array, signed_bits=False, average='mean', correction='division'):
+
+    # Apply the background correction
+    corrected_array = corr.backgroundCorrection(array,
+        signed_bits=signed_bits,
+        average=average,
+        correction=correction
+        )
+
+    return corrected_array
+
+# ---------------------------------
+# Correct the contrast of the image
+def contrastCorrection(array, min=None, max=None, percentile=10, percentile_min=None, rescale=True, log_scale=False):
+
+    # Get the limits
+    old_limits, new_limits = corr.setContrastCorrection(array,
+        min=min,
+        max=max,
+        percentile=percentile,
+        percentile_min=percentile_min,
+        rescale=rescale,
+        log_scale=log_scale
+        )
+
+    # Process the array
+    corrected_array = corr.doContrastCorrection(array, old_limits, new_limits)
+
+    return corrected_array
+
+##-\-\-\-\-\-\-\-\-\
+## IMAGE MANIPULATION
+##-/-/-/-/-/-/-/-/-/
+
+# -------------------------------------
+# Crop the image using the given points
+def cropImage(array, top_left=(0,0), bottom_right=None):
+    return mod.crop(array, top_left=top_left, bottom_right=bottom_right)

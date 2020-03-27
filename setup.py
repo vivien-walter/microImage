@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name = "microImage",
-    version = "1.0",
+    version = "2.0",
     author = "Vivien WALTER",
     author_email = "walter.vivien@gmail.com",
     description = ("Python3 module to open all common type of image used in microscopy."),
@@ -20,10 +20,13 @@ setup(
         "Topic :: Utilities",
         "License :: OSI Approved :: BSD License",
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.2',
     install_requires=[
+        'bottleneck',
+        'matplotlib',
         'numpy',
         'Pillow',
         'pims',
+        'scikit-image',
     ]
 )
