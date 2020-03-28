@@ -7,7 +7,7 @@ import numpy as np
 
 # ------------------------------------------------------
 # Get the min and max value to define the contrast scale
-def _get_min_max(array, min=None, max=None, percentile=10, percentile_min=None, log_scale=False):
+def _get_min_max(array, min=None, max=None, percentile=10, percentile_min=None):
 
     # Calculate the min value
     if min is None:
@@ -16,22 +16,14 @@ def _get_min_max(array, min=None, max=None, percentile=10, percentile_min=None, 
         if percentile_min is None:
             percentile_min = percentile
 
-        # Get the value
-        if log_scale:
-            min = 10**( np.percentile(np.log10(array), percentile_min) )
-        else:
-            min = np.percentile(array, percentile_min)
+        min = np.percentile(array, percentile_min)
 
     # Calculate the max value
     if max is None:
 
         percentile = 100 - percentile
 
-        # Get the value
-        if log_scale:
-            max = 10**( np.percentile(np.log10(array), percentile) )
-        else:
-            max = np.percentile(array, percentile)
+        max = np.percentile(array, percentile)
 
     return min, max
 
@@ -126,10 +118,10 @@ def _apply_correction(array, reference, type='division'):
 
 # --------------------------------------------
 # Prepare the contrast correction of the image
-def setContrastCorrection(array, min=None, max=None, percentile=10, percentile_min=None, rescale=True, log_scale=False):
+def setContrastCorrection(array, min=None, max=None, percentile=10, percentile_min=None, rescale=True):
 
     # Get the limits for the old values
-    min, max = _get_min_max(array, min=min, max=max, percentile=percentile, percentile_min=percentile_min, log_scale=log_scale)
+    min, max = _get_min_max(array, min=min, max=max, percentile=percentile, percentile_min=percentile_min)
 
     # Get the limits in new values
     new_min, new_max = _get_scale(array, rescale=rescale)

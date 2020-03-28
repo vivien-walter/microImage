@@ -54,7 +54,7 @@ def backgroundCorrection(array, signed_bits=False, average='mean', correction='d
 
 # ---------------------------------
 # Correct the contrast of the image
-def contrastCorrection(array, min=None, max=None, percentile=10, percentile_min=None, rescale=True, log_scale=False):
+def contrastCorrection(array, min=None, max=None, percentile=10, percentile_min=None, rescale=True):
 
     # Get the limits
     old_limits, new_limits = corr.setContrastCorrection(array,
@@ -62,8 +62,7 @@ def contrastCorrection(array, min=None, max=None, percentile=10, percentile_min=
         max=max,
         percentile=percentile,
         percentile_min=percentile_min,
-        rescale=rescale,
-        log_scale=log_scale
+        rescale=rescale
         )
 
     # Process the array

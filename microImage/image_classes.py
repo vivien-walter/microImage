@@ -45,9 +45,9 @@ class ImageFrame:
         self.corrected = np.copy(array)
 
         # Initialize limits for contrast correction
-        self.isCorrected = False
-        self.min_to_correct, self.max_to_correct = None, None
-        self.min_corrected, self.max_corrected = None, None
+        self._isCorrected = False
+        self._min_to_correct, self._max_to_correct = None, None
+        self._min_corrected, self._max_corrected = None, None
 
     # ------------------------------------
     # Update the currently displayed frame
@@ -58,13 +58,13 @@ class ImageFrame:
         self.corrected = np.copy(array)
 
         # Apply correction if possible
-        if self.isCorrected:
+        if self._isCorrected:
             self.contrastCorrection()
 
     # ---------------------------------
     # Correct the contrast on the image
     def contrastCorrection(self):
-        self.corrected = doContrastCorrection(self.raw, (self.min_to_correct, self.max_to_correct), (self.min_corrected, self.max_corrected))
+        self.corrected = doContrastCorrection(self.raw, (self._min_to_correct, self._max_to_correct), (self._min_corrected, self._max_corrected))
 
 ##-\-\-\-\-\-\
 ## STACK CLASS
@@ -117,9 +117,9 @@ class ImageStack:
             percentile_min=percentile_min,
             rescale=rescale
             )
-        self.frame.isCorrected = True
-        self.frame.min_to_correct, self.frame.max_to_correct = old_limits
-        self.frame.min_corrected, self.frame.max_corrected = new_limits
+        self.frame._isCorrected = True
+        self.frame._min_to_correct, self.frame._max_to_correct = old_limits
+        self.frame._min_corrected, self.frame._max_corrected = new_limits
 
         # Apply the correction
         self.frame.contrastCorrection()
@@ -130,7 +130,7 @@ class ImageStack:
 
         # Reinitialise all defined values
         self.array = np.copy(self.source)
-        self.frame.isCorrected = False
+        self.frame._isCorrected = False
         self.frame.updateFrame( self.array[self.frame_nbr] )
 
     ##-\-\-\-\-\-\-\-\-\
