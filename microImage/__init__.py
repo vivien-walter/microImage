@@ -30,6 +30,11 @@ def loadImage(path, name = None):
 
     return img.getImageClass(imageArray, name=name)
 
+# --------------------------
+# Load an array into a class
+def loadArray(array, name='Untitled'):
+    return img.getImageClass(array, name=name)
+
 # -----------------------------
 # Save the image frame or stack
 def saveImage(array, path, default=".tif", bit_depth=8, rescale=True):

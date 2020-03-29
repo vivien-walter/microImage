@@ -173,7 +173,7 @@ It is possible to extract the images in an ImageStack object rather than in an a
 
 ### Loading the image in the class <a name="load_class"></a>
 
-To load an image and generate an object, we use the function *loadImage()*
+* To load an image and generate an object, we use the function *loadImage()*
 
 ```python
 from microImage import loadImage
@@ -181,7 +181,17 @@ from microImage import loadImage
 image = loadImage('./path/to/folder/or/image.image_extension')
 ```
 
-The return is an object with the following attributes:
+* Additionally, the ImageStack class can be loaded with an array instead of an image file using the *loadArray()* function
+
+```python
+from microImage import loadArray
+
+image = loadArray(imageArray, name='test array')
+```
+
+It is essential that the imageArray object here is a 3-D array of dimension **(number of frame, Y, X)**
+
+The element returned by each of these functions is an object with the following attributes:
 
 Name | Type | Description
 ---|---|---
