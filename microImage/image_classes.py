@@ -5,6 +5,7 @@ import os
 
 from microImage.correction import backgroundCorrection, setContrastCorrection, doContrastCorrection
 from microImage.input_output import saveImage
+from microImage.labelling import timeStamps, scaleBar, makeMontage
 from microImage.modification import crop
 
 ##-\-\-\-\-\-\-\-\
@@ -88,6 +89,12 @@ class ImageStack:
         self.frame = ImageFrame(self.array[0])
         self.frame_nbr = 0
 
+        # Initialize the calibration
+        self.space_unit = 'px'
+        self.space_scale = 1 # In unit/pixel
+        self.time_unit = 'frame'
+        self.time_scale = 1 # In unit/frame
+
     ##-\-\-\-\-\-\-\-\
     ## IMAGE CORRECTION
     ##-/-/-/-/-/-/-/-/
@@ -133,6 +140,19 @@ class ImageStack:
         self.frame._isCorrected = False
         self.frame.updateFrame( self.array[self.frame_nbr] )
 
+    # --------------------------
+    # Set the scale of the array
+    def setScale(self, time_unit=None, time_scale=None, space_unit=None, space_scale=None):
+
+        if time_unit is not None:
+            self.time_unit = time_unit
+        if time_scale is not None:
+            self.time_unit = time_scale
+        if space_unit is not None:
+            self.time_unit = space_unit
+        if space_scale is not None:
+            self.time_unit = space_scale
+
     ##-\-\-\-\-\-\-\-\-\
     ## IMAGE MODIFICATION
     ##-/-/-/-/-/-/-/-/-/
@@ -171,6 +191,40 @@ class ImageStack:
         # Crop the arrays
         self.source = crop(self.source, top_left=top_left, bottom_right=bottom_right)
         self.array = crop(self.array, top_left=top_left, bottom_right=bottom_right)
+
+        # Reload the frame
+        self.frame.updateFrame( self.array[self.frame_nbr] )
+
+    # ----------------------------
+    # Add a scale bar on the image
+    def scaleBar(self, frame=None, scale_length=10, thickness=20, padding=10, white_bar=True, add_text=True, font='Arial.ttf', font_size=None):
+
+        # Modify all frames
+        if frame is None and len(self.array.shape) == 3:
+            new_array = []
+            for frameArray in self.array:
+                new_array.append( scaleBar(frameArray, space_unit=self.space_unit, space_scale=self.space_scale, scale_length=scale_length, thickness=thickness, padding=padding, white_bar=white_bar, add_text=add_text, font=font, font_size=font_size) )
+            self.array = np.array(new_array)
+
+        # Modify a single frame
+        elif frame is not None and len(self.array.shape) == 3:
+            self.array[frame] = scaleBar(self.array[frame], space_unit=self.space_unit, space_scale=self.space_scale, scale_length=scale_length, thickness=thickness, padding=padding, white_bar=white_bar, add_text=add_text, font=font, font_size=font_size)
+
+        else:
+            self.array = scaleBar(self.array, space_unit=self.space_unit, space_scale=self.space_scale, scale_length=scale_length, thickness=thickness, padding=padding, white_bar=white_bar, add_text=add_text, font=font, font_size=font_size)
+
+        # Reload the frame
+        self.frame.updateFrame( self.array[self.frame_nbr] )
+
+    # -----------------------------
+    # Add time stamps on the frames
+    def timeStamps(self, font_size=None, font='Arial.ttf', padding=10, position='top', white_text=True):
+
+        # Check if it's a sequence
+        _check_multiple_frames(self.array)
+
+        # Modify the image
+        self.array = timeStamps(self.array, time_unit=self.time_unit, time_scale=self.time_scale, font_size=font_size, font=font, padding=padding, position=position, white_text=white_text)
 
         # Reload the frame
         self.frame.updateFrame( self.array[self.frame_nbr] )
@@ -242,6 +296,19 @@ class ImageStack:
 
         # Save the image
         saveImage(array, name, default=extension, bit_depth=bit_depth, rescale=rescale)
+
+    # ----------------------------------------
+    # Save a montage using the selected frames
+    def makeMontage(self, frames=1, column=None, row=None, margin=0, white_margin=False, name=None, extension='.tif', bit_depth=16, rescale=True):
+
+        # Check if it's a sequence
+        _check_multiple_frames(self.array)
+
+        # Do the montage
+        montageArray = makeMontage(self.array, frames=frames, column=column, row=row, margin=margin, white_margin=white_margin)
+
+        # Save the montage
+        saveImage(montageArray, name, default=extension, bit_depth=bit_depth, rescale=rescale)
 
 ##-\-\-\-\-\-\-\-\
 ## PUBLIC FUNCTIONS
