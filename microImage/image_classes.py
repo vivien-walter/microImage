@@ -147,11 +147,11 @@ class ImageStack:
         if time_unit is not None:
             self.time_unit = time_unit
         if time_scale is not None:
-            self.time_unit = time_scale
+            self.time_scale = time_scale
         if space_unit is not None:
-            self.time_unit = space_unit
+            self.space_unit = space_unit
         if space_scale is not None:
-            self.time_unit = space_scale
+            self.space_scale = space_scale
 
     ##-\-\-\-\-\-\-\-\-\
     ## IMAGE MODIFICATION
@@ -299,7 +299,7 @@ class ImageStack:
 
     # ----------------------------------------
     # Save a montage using the selected frames
-    def makeMontage(self, frames=1, column=None, row=None, margin=0, white_margin=False, name=None, extension='.tif', bit_depth=16, rescale=True):
+    def makeMontage(self, name=None, frames=1, column=None, row=None, margin=0, white_margin=False, extension='.tif', bit_depth=16, rescale=True):
 
         # Check if it's a sequence
         _check_multiple_frames(self.array)

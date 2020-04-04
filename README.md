@@ -6,7 +6,7 @@ ___
 
 ### Description
 
-- **Version:** 2.0
+- **Version:** 2.1
 - **Author:** Vivien WALTER
 - **Contact:** walter.vivien@gmail.com
 
@@ -40,11 +40,16 @@ It can also save image(s) in the following formats:
     * [Background correction](#background)
     * [Contrast correction](#contrast)
     * [Crop the image](#crop)
+    * [Generate a montage](#montage)
+  * [Writing labels on images](#label)
+    * [Scale bar](#scale)
+    * [Time stamps](#time)
 3. [Using the ImageStack class](#class)
   * [Loading the image in the class](#load_class)
   * [Navigate in the frames and display them](#frame_class)
   * [Duplicate and modify the image](#edit_class)
   * [Apply a correction on the image](#correct_class)
+  * [Modify the space and time scale of the image](#scale_class)
   * [Save the image(s) in a file](#save_class)
 
 ---
@@ -167,6 +172,54 @@ croppedArray = cropImage(imageArray, top_left=(200,200), bottom_right=(800,800))
 
 Each limit should be given as (X,Y) coordinates. If left to default, *top_left* will be equal to (0,0) and *bottom_right* to (Xmax, Ymax).
 
+#### Generate a montage <a name="montage"></a>
+
+A stack of images can be turned into a montage of individual frames in a single image. This is done by the function *makeMontage()*
+
+```python
+from microImage import makeMontage
+
+montageArray = makeMontage(imageArray, frames=5, column=None, row=None, margin=20, white_margin=False)
+```
+
+The arguments `frames=` define the frames that has to be added in the montage. If an integer is given, the function will save every N frames of the stack. If a list is given, the list will be used as list of incides of the frame to save.
+
+The general shape of the montage can be selected using the arguments `column=` and `row=`, respectively the number of columns and rows making the montage table. If any or both of these arguments are set to None, the function will automatically calculate what is required.
+
+The arguments `margin=` allows for drawing margin between each pictures in the montage. If different from 0, it will be used as the thickness in pixels. The color of the margin is selected via the argument `white_margin=`.
+
+### Writing labels on images <a name="label"></a>
+
+The module microImage includes some simple tool to quicky write labels on the images
+
+#### Scale bar <a name="scale"></a>
+
+It is possible to add automatically a simple scale bar on the image using the *addBar()* function
+
+```python
+from microImage import addBar
+
+modifiedArray = addBar(imageArray, scale_length=5, thickness=50, padding=20, white_bar=True, space_unit='µm', space_scale=46.21, add_text=True)
+```
+
+The scale and space units can be specified using the arguments `space_scale=` and `space_unit=` respectively. If None are given, the function will assume a scale in pixel. The length of the bar (in the given space scale and unit) can be selected using `scale_length=`. The `thickness` and the `padding` surrouding the bar car be selected with their eponymous arguments. User can select between white and black bars using the `white_bar=` boolean argument.
+
+It is possible to add text on top of the bar with the `add_text=` boolean argument. User can select the `font=` .ttf file to use (default: *Arial.ttf*) and the font size with the `font_size=` argument. If let empty, the function will automatically the font size to match the scale bar length.
+
+#### Time stamps <a name="time"></a>
+
+To add time stamps on an image stack, one can use the function *addTime()*
+
+```python
+from microImage import addTime
+
+modifiedArray = addTime(imageArray, position='top', padding=20, white_text=True, time_unit='s', time_scale=1/200, add_text=True)
+```
+
+Position of the stamp can be selected between top and bottom using the `position=` argument. The scale and time units can be specified using the arguments `time_scale=` and `time_unit=` respectively. The color of the text is selected using the argument `white_text=`.
+
+The text options are the same as the one for the [addBar()](#scale) function.
+
 ## Using the ImageStack class <a name="class"></a>
 
 It is possible to extract the images in an ImageStack object rather than in an array. Using an ImageStack object will reduce the versatility as compared to an array, but make the image processing easier to perform.
@@ -274,6 +327,34 @@ image.reset()
 
 This will cancel any background and contrast correction, but not modifications made by the .crop() and .reducedRange() commands.
 
+### Modify the space and time scale of the image <a name="scale_class"></a>
+
+* Set the scales using the *setScale()* function
+
+```python
+image.setScale(time_scale=1/200, time_unit='s', space_scale=46.21, space_unit='µm')
+```
+
+The `time_scale=` should be given in unit/frame and the `space_scale=` in unit/pixel. Only the called arguments will be modified, the one set to None or not added will be left unchanged.
+
+* Add a scale bar on the image(s) using the *scaleBar()* function
+
+```python
+image.scaleBar(frame=0, scale_length=4, add_text=False)
+```
+
+The argument `frame=` can used to select on which specific frame the scale bar should be added. If set to None, the scale bar will be added on all frames.
+
+Refer to the function [addBar()](#scale) above for description of other arguments.
+
+* Add time stamps on an image stack using the *timeStamps()* function
+
+```python
+image.timeStamps(white_text=True)
+```
+
+Refer to the function [addTime()](#time) above for description of all arguments.
+
 ### Save the image(s) in a file <a name="save_class"></a>
 
 * The command *.saveStack()* will save the whole stack saved in the ImageStack instance.
@@ -289,3 +370,11 @@ The *save_raw* argument allows the user to select if the corrected or raw array 
 ```python
 image.saveFrame('./path/to/new/file.tif', bit_depth=16, rescale=True, save_raw=False)
 ```
+
+* To save a montage of a selection of frame, the command *.makeMontage()* can be used
+
+```python
+image.makeMontage(name='./path/to/montage.tif', frames=[0,2,4,10], bit_depth=16, rescale=True)
+```
+
+Refer to the function [makeMontage()](#montage) above for description of all montage-related arguments of the command.

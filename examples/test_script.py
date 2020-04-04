@@ -40,5 +40,17 @@ contrastedArray = mim.contrastCorrection(croppedArray, percentile_min=30, percen
 plt.imshow(contrastedArray[0], cmap='gray')
 plt.show()
 
+# Add a time stamp on the image array
+stampedArray = mim.addTime(contrastedArray, time_unit='s', time_scale=1/200, font_size=180, padding=50, white_text=True, position='top')
+
+# Add a scale bar without text on the image array
+markedArray = mim.addBar(stampedArray, space_unit='µm', space_scale=46.21, scale_length=4, thickness=50, add_text=False, white_bar=True, padding=50)
+
 # Save the image in a file
-mim.saveImage(contrastedArray, '/path/to/new/folder/and/image_file.tif', bit_depth=16, rescale=True)
+mim.saveImage(markedArray, '/path/to/new/folder/and/image_file.tif', bit_depth=16, rescale=True)
+
+# Make a montage from the image stack
+montageArray = mim.makeMontage(markedArray, frames=5, margin=20, white_margin=False)
+
+# Save the montage in a file
+mim.saveImage(markedArray, '/path/to/montage_file.png', bit_depth=16, rescale=True)
