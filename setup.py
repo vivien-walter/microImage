@@ -23,6 +23,7 @@ setup(
     python_requires='>=3.2',
     install_requires=[
         'bottleneck',
+        'ffmpeg-python',
         'matplotlib',
         'numpy',
         'Pillow',

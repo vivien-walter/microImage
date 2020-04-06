@@ -1,3 +1,4 @@
+import ffmpeg
 from glob import glob
 import numpy as np
 import os
@@ -157,6 +158,45 @@ def _save_stack(array, path):
     else:
         io.imsave(path, array)
 
+# ----------------------------------
+# Convert an array into a video file
+def _convert_to_RGB(array):
+
+    # Check the bit depth
+    if array.dtype != np.uint8:
+        array = _convert_bit_depth(array, bit_depth=8, rescale=True)
+
+    # Add new channels
+    if len(array.shape) != 4:
+        arrays = [array for _ in range(3)]
+        array = np.stack(arrays, axis=3)
+
+    return array
+
+# --------------------------------
+# Save the array into a video file
+def _save_video(path, array, fps=25, video_codec='libx264'):
+
+    # Check the extension of the given file
+    path = _check_extensions( [path], extensions=['.mp4'] )[0]
+
+    # Get the informations from the array
+    n,height,width,channels = array.shape
+
+    # Initialize the process
+    process = ffmpeg.input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(width, height))
+    process = ffmpeg.output(process, path, pix_fmt='yuv420p', vcodec=video_codec, r=fps)
+    process = ffmpeg.overwrite_output(process)
+    process = ffmpeg.run_async(process, pipe_stdin=True)
+
+    # Save all the frames
+    for frame in array:
+        process.stdin.write( frame.tobytes() )
+
+    # Terminate the process
+    process.stdin.close()
+    process.wait()
+
 ##-\-\-\-\-\-\-\-\
 ## PUBLIC FUNCTIONS
 ##-/-/-/-/-/-/-/-/
@@ -197,3 +237,13 @@ def saveImage(array, path, default=".tif", bit_depth=8, rescale=True):
     # Save a stack or animation
     else:
         _save_stack(array, path)
+
+# -------------------------
+# Save the array as a video
+def saveVideo(file_name, array, fps=25, video_codec='libx264'):
+
+    # Convert the array to the correct format
+    array = _convert_to_RGB(array)
+
+    # Create the video
+    _save_video(file_name, array, fps=fps, video_codec=video_codec)

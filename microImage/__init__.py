@@ -42,6 +42,11 @@ def loadArray(array, name='Untitled'):
 def saveImage(array, path, default=".tif", bit_depth=8, rescale=True):
     io.saveImage(array, path, default=default, bit_depth=bit_depth, rescale=rescale)
 
+# -------------------------
+# Save the array as a video
+def saveVideo(array, path, fps=25, video_codec='libx264'):
+    io.saveVideo(path, array, fps=fps, video_codec=video_codec)
+
 ##-\-\-\-\-\-\-\-\
 ## IMAGE CORRECTION
 ##-/-/-/-/-/-/-/-/

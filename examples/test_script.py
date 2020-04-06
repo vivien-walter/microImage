@@ -49,6 +49,9 @@ markedArray = mim.addBar(stampedArray, space_unit='µm', space_scale=46.21, scal
 # Save the image in a file
 mim.saveImage(markedArray, '/path/to/new/folder/and/image_file.tif', bit_depth=16, rescale=True)
 
+# Save the stack as a video
+mim.saveVideo(markedArray, '/path/to/video_file.mp4', fps=25)
+
 # Make a montage from the image stack
 montageArray = mim.makeMontage(markedArray, frames=5, margin=20, white_margin=False)
 

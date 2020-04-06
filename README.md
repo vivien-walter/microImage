@@ -6,7 +6,7 @@ ___
 
 ### Description
 
-- **Version:** 2.1
+- **Version:** 2.2
 - **Author:** Vivien WALTER
 - **Contact:** walter.vivien@gmail.com
 
@@ -24,6 +24,7 @@ It can also save image(s) in the following formats:
 - .TIFF images and stacks
 - .GIF images and animations (8-bits only)
 - .PNG, .BMP and .JPG standard images
+- .MP4 video
 
 ---
 
@@ -36,6 +37,7 @@ It can also save image(s) in the following formats:
   * [Basic Input/Output functions](#io)
     * [Opening an image](#open)
     * [Saving an image on the computer](#save)
+    * [Video generation](#video)
   * [Image correction and modification](#correction)
     * [Background correction](#background)
     * [Contrast correction](#contrast)
@@ -61,6 +63,7 @@ It can also save image(s) in the following formats:
 The following modules are required to run MicroImage:
 
 - Bottleneck
+- ffmpeg-python
 - Matplotlib
 - NumPy
 - pims
@@ -68,6 +71,8 @@ The following modules are required to run MicroImage:
 - Scikit-image
 
 If you install the module using the setup.py script, you do NOT need to install first the module above.
+
+In order to generate video, it is required to have **FFMPEG** installed on the computer. Instructions on how to install FFMPEG can be found on [Internet](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg) (e.g. [MacOS](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/wiki/Installing-ffmpeg-on-Mac-OS-X))
 
 ### Installation using the setup.py script <a name="script"></a>
 
@@ -129,6 +134,22 @@ The function will automatically detect if you are trying to save a single frame 
 You can specify the bit depth of the output image (8 or 16 bits, 8 bits only for gif animations) using the *bit_depth* argument. The function will always try to cover the full bit depth with the given pixel values; this can be prevented with the argument *rescale=False*.
 
 If an extension is not specified, in the path of the file to create, the default extension .tif will be used. This can be changed by using the argument *default* to specify another default format (e.g *default='.png'*)
+
+#### Video generation <a name="video"></a>
+
+It is also possible to save the array as a .mp4 video using the *saveVideo()* function:
+
+```python
+from microImage import saveVideo
+
+saveImage(imageArray, './path/to/new/file.mp4', fps=25)
+```
+
+Having **ffmpeg** installed on the computer is required to use this function.
+
+All arrays will be converted to 8-bits prior to be saved. The framerate of the video can be selected using the `fps=` argument.
+
+It is possible to select a specific video codec for the output video using the `video_codec=` argument. The default video codec is *libx264*.
 
 ### Image correction and modification <a name="correction"></a>
 
@@ -378,3 +399,11 @@ image.makeMontage(name='./path/to/montage.tif', frames=[0,2,4,10], bit_depth=16,
 ```
 
 Refer to the function [makeMontage()](#montage) above for description of all montage-related arguments of the command.
+
+* To save a video file, the command *.saveVideo()* cam be used
+
+```python
+image.saveVideo(name='./path/to/montage.mp4', fps=25)
+```
+
+Refer to the function [saveVideo()](#video) above for description of all video generation arguments of the command.

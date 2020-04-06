@@ -64,3 +64,6 @@ image2.saveStack('/path/to/new/folder/and/stack.gif', bit_depth=8, save_raw=True
 
 # Save the array as a montage
 image2.makeMontage('/path/to/montage.png', frames=5, margin=20, white_margin=False, bit_depth=16, rescale=True)
+
+# Save the stack as an arrray
+image2.saveStack('/path/to/video_file.mp4', fps=25)

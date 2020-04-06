@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 from microImage.correction import backgroundCorrection, setContrastCorrection, doContrastCorrection
-from microImage.input_output import saveImage
+from microImage.input_output import saveImage, saveVideo
 from microImage.labelling import timeStamps, scaleBar, makeMontage
 from microImage.modification import crop
 
@@ -296,6 +296,11 @@ class ImageStack:
 
         # Save the image
         saveImage(array, name, default=extension, bit_depth=bit_depth, rescale=rescale)
+
+    # -------------------------
+    # Save the stack as a video
+    def saveVideo(self, name='untitled.mp4', fps=25, video_codec='libx264'):
+        saveVideo(name, self.array, fps=fps, video_codec=video_codec)
 
     # ----------------------------------------
     # Save a montage using the selected frames
