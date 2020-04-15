@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from microImage.correction import backgroundCorrection, setContrastCorrection, doContrastCorrection
+from microImage.correction import backgroundCorrection, setContrastCorrection, doContrastCorrection, showPVDistribution
 from microImage.input_output import saveImage, saveVideo
 from microImage.labelling import timeStamps, scaleBar, makeMontage
 from microImage.modification import crop
@@ -232,6 +232,11 @@ class ImageStack:
     ##-\-\-\-\-\-\-\-\-\-\
     ## DISPLAYING FUNCTIONS
     ##-/-/-/-/-/-/-/-/-/-/
+
+    # -------------------------------------------------
+    # Display the pixel value distribution of the image
+    def showPVD(self, n_bins=1000, min=None, max=None, percentile=10, percentile_min=None, log_scale=None):
+        showPVDistribution(self.frame.raw, n_bins=n_bins, min=min, max=max, percentile=percentile, percentile_min=percentile_min, log_scale=log_scale)    
 
     # ------------------------
     # Change the current frame

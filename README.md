@@ -6,7 +6,7 @@ ___
 
 ### Description
 
-- **Version:** 2.2
+- **Version:** 2.3
 - **Author:** Vivien WALTER
 - **Contact:** walter.vivien@gmail.com
 
@@ -41,6 +41,7 @@ It can also save image(s) in the following formats:
   * [Image correction and modification](#correction)
     * [Background correction](#background)
     * [Contrast correction](#contrast)
+    * [Displaying the pixel value distribution](#distribution)
     * [Crop the image](#crop)
     * [Generate a montage](#montage)
   * [Writing labels on images](#label)
@@ -142,7 +143,7 @@ It is also possible to save the array as a .mp4 video using the *saveVideo()* fu
 ```python
 from microImage import saveVideo
 
-saveImage(imageArray, './path/to/new/file.mp4', fps=25)
+saveVideo(imageArray, './path/to/new/file.mp4', fps=25)
 ```
 
 Having **ffmpeg** installed on the computer is required to use this function.
@@ -180,6 +181,20 @@ correctedArray = contrastCorrection(imageArray, min=None, max=None, percentile=1
 The user can specify either the *min* and *max* pixel value, or can ask the function to calculate it based on percentiles. The min value is calculated based on *percentile_min* and the max based on *percentile* (from 100%, so 10 corresponds to 90%). If percentile_min is not given, the value of percentile will be used.
 
 The output can be rescaled to the full bit depth with *rescale=True*. If left False, the scale will be based on the old min and max pixel values.
+
+#### Displaying the pixel value distribution <a name="distribution"></a>
+
+It is possible to display the pixel value distribution of the image array, along with the position of the min and max values calculated by the *contrastCorrection()* function. This can be done with the *showPVD()* function.
+
+```python
+from microImage import showPVD
+
+showPVD(imageArray, n_bins=10000, min=None, max=None, percentile=10, percentile_min=None, log_scale=None)
+```
+
+The function will display the pixel value distribution as an histogram. The number of bins can be controlled by the `n_bins=` argument (default is 1000). The scale of the histogram can be switched to log using the `log_scale=` argument. If left to None, both axes will be shown as normal scales. "x" will use log scale for the X-axis, "y" for the Y-axis, and "xy" (or "yx") will use log scale for both axis.
+
+All other arguments are similar to the one of the function *contrastCorrection()*, besides the `rescale=` which cannot be used here.
 
 #### Crop the image <a name="crop"></a>
 
@@ -234,7 +249,7 @@ To add time stamps on an image stack, one can use the function *addTime()*
 ```python
 from microImage import addTime
 
-modifiedArray = addTime(imageArray, position='top', padding=20, white_text=True, time_unit='s', time_scale=1/200, add_text=True)
+modifiedArray = addTime(imageArray, position='top', padding=20, white_text=True, time_unit='s', time_scale=1/200)
 ```
 
 Position of the stamp can be selected between top and bottom using the `position=` argument. The scale and time units can be specified using the arguments `time_scale=` and `time_unit=` respectively. The color of the text is selected using the argument `white_text=`.
@@ -334,10 +349,16 @@ If not specified, the *first* and *last* frame of the new subrange will be calcu
 image.backgroundCorrection(imageArray, signed_bits=True, average='median', correction='division')
 ```
 
-* Background correction similar to the one of the [contrastCorrection()](#contrast) function can be applied with the *.contrastCorrection()* command
+* Contrast correction similar to the one of the [contrastCorrection()](#contrast) function can be applied with the *.contrastCorrection()* command
 
 ```python
 image.contrastCorrection(imageArray, min=None, max=None, percentile=10, percentile_min=None, rescale=True)
+```
+
+* The effect of the contrastCorrection on the pixel value distribution can be assessed with the *.showPVD()* command. Check the documentation on the [showPVD()](#distribution) function above for more details.
+
+```python
+image.showPVD(min=None, max=None, percentile=10, percentile_min=None, n_bins=1000, log_scale='xy')
 ```
 
 * All modifications can be reset anytime using the *.reset()* command.

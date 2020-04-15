@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name = "microImage",
-    version = "2.0",
+    version = "2.3",
     author = "Vivien WALTER",
     author_email = "walter.vivien@gmail.com",
     description = ("Python3 module to open all common type of image used in microscopy."),

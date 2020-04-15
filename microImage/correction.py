@@ -1,4 +1,5 @@
 import bottleneck as bn
+import matplotlib.pyplot as plt
 import numpy as np
 
 ##-\-\-\-\-\-\-\-\-\
@@ -112,6 +113,30 @@ def _apply_correction(array, reference, type='division'):
 
     return corrected_array
 
+# ---------------------------------------------------
+# Display the PV distribution and the user set limits
+def _display_distribution(array, min, max, n_bins=1000, log_scale=None):
+
+    # Display the histogram
+    plt.hist(np.ravel(array), bins=n_bins)
+
+    # Add the limit bar
+    plt.axvline(x=min, color='blue', alpha=.5)
+    plt.axvline(x=max, color='blue', alpha=.5)
+
+    # Edit the display of the graph
+    plt.ylabel('#')
+    plt.xlabel('Pixel value (AU)')
+
+    # Logarithm scale
+    if log_scale is not None:
+        if 'y' in log_scale.lower():
+            plt.yscale('log')
+        if 'x' in log_scale.lower():
+            plt.xscale('log')
+
+    plt.show()
+
 ##-\-\-\-\-\-\-\-\
 ## PUBLIC FUNCTIONS
 ##-/-/-/-/-/-/-/-/
@@ -156,3 +181,13 @@ def backgroundCorrection(array, signed_bits=False, average='mean', correction='d
         corrected_array = corrected_array.astype(data_type)
 
     return corrected_array
+
+# ---------------------------------
+# Show the pixel value distribution
+def showPVDistribution(array, n_bins=1000, min=None, max=None, percentile=10, percentile_min=None, log_scale=None):
+
+    # Get the limits for the current values
+    min, max = _get_min_max(array, min=min, max=max, percentile=percentile, percentile_min=percentile_min)
+
+    # Display the histogram
+    _display_distribution(array, min, max, n_bins=n_bins, log_scale=log_scale)

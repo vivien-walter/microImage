@@ -82,6 +82,11 @@ def contrastCorrection(array, min=None, max=None, percentile=10, percentile_min=
 
     return corrected_array
 
+# -------------------------------------------------
+# Display the pixel value distribution of the input
+def showPVD(array, n_bins=1000, min=None, max=None, percentile=10, percentile_min=None, log_scale=None):
+    corr.showPVDistribution(array, n_bins=n_bins, min=min, max=max, percentile=percentile, percentile_min=percentile_min, log_scale=log_scale)
+
 ##-\-\-\-\-\-\-\-\-\
 ## IMAGE MANIPULATION
 ##-/-/-/-/-/-/-/-/-/
