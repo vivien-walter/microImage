@@ -41,9 +41,10 @@ def _open_folder(path):
 
     # Check that the files in the folder can be opened
     file_in_folder = _check_extensions(file_in_folder)
+    _, file_extension = os.path.splitext(file_in_folder[0])
 
     # Open all the images
-    sequence = pims.ImageSequence(path)
+    sequence = pims.ImageSequence( os.path.join(path, '*'+file_extension) )
 
     return np.array(sequence)
 

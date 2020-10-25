@@ -7,18 +7,18 @@ def read(fname):
 
 setup(
     name = "microImage",
-    version = "2.3",
+    version = "2.3.1",
     author = "Vivien WALTER",
     author_email = "walter.vivien@gmail.com",
     description = ("Python3 module to open all common type of image used in microscopy."),
-    license = "BSD",
+    license = "GPL3.0",
     keywords = "microscopy image open",
     url = "https://github.com/vivien-walter/microImage",
     packages=['microImage'],
     long_description=read('README.md'),
     classifiers=[
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: GPL3.0 License",
     ],
     python_requires='>=3.2',
     install_requires=[

@@ -6,7 +6,7 @@ ___
 
 ### Description
 
-- **Version:** 2.3
+- **Version:** 2.3.1
 - **Author:** Vivien WALTER
 - **Contact:** walter.vivien@gmail.com
 
